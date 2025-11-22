@@ -35,9 +35,95 @@ A diagram (recommended for the repo) can live in `assets/architecture-diagram.pn
 
 1. Flash **Raspberry Pi OS Lite** to the SD card using Raspberry Pi Imager.  
 2. In the Imager advanced options, configure:
-   - Username: `your-username`  
+   - Username: `your-username`
    - Password: your strong password  
    - Wi‑Fi SSID + password (2.4 GHz)  
    - Enable SSH  
 3. Boot the Pi and SSH into it from your main machine:
+   `ssh your-username@<pi-ip-or-hostname>`
+
+### 2. Update system
+   `
+   sudo apt update
+   sudo apt full-upgrade -y
+   `
+
+---
+
+## 📁 Local NAS via Samba
+
+### 1. Create a NAS directory on the SD
+### 2. Install and configure Samba
+   - Edit `/etc/samba/smb.conf` and add at the end:
+### 3. Test from Linux on the same LAN
+
+---
+
+## 📱 Future: Mobile Access
+
+Planned (documented but optional for v1):
+
+- Install **Tailscale** on Android/iOS.  
+- Install a file manager with **SMB support**.  
+- Configure a new SMB share pointing to the Pi’s **Tailscale IP** (`100.x.y.z`), share `nas`, user `il`.
+
+This allows secure file access from phones, again without exposing SMB to the public internet.
+
+---
+
+## 🔒 Security & Design Notes
+
+- **SMB is LAN‑only**; no port forwarding of 445/139 on the router.  
+- **Remote access** is handled exclusively via Tailscale, using authenticated devices.  
+- **Storage v1** uses the **boot SD card** for simplicity and low cost:
+  - Good for learning and light personal use.  
+  - Not ideal for heavy write workloads due to SD card wear.  
+- **Future improvement**: move data to a dedicated USB SSD/HDD for better endurance and throughput.
+
+---
+
+## 🧭 Repository Layout (suggested)
+   ├─ README.md
+   ├─ docs/
+   │ ├─ architecture.md
+   │ ├─ setup-pi.md
+   │ ├─ setup-samba.md
+   │ ├─ setup-tailscale.md
+   │ ├─ client-linux.md
+   │ └─ future-work.md
+   ├─ scripts/
+   │ ├─ mount_nas_linux_example.sh
+   │ └─ backup_to_nas_example.sh
+   ├─ config/
+   │ ├─ smb.conf.example
+   │ └─ fstab-snippet.txt
+   └─ assets/
+   ├─ architecture-diagram.png
+   ├─ tailscale-admin-screenshot.png
+   └─ linux-mount-screenshot.png
+
+
+You can start with just `README.md` and gradually add the `docs/`, `scripts/`, and `assets/` as you refine the project.
+
+---
+
+## ✅ Status & Next Steps
+
+**Current state (v1):**
+
+- Pi Zero 2 W configured with Raspberry Pi OS Lite  
+- Local NAS via Samba on the boot SD  
+- Secure remote access via Tailscale  
+- Linux client mounting over both LAN IP and Tailscale IP
+
+**Planned next steps:**
+
+- Add Android/iOS access instructions  
+- Move storage to USB SSD/HDD  
+- Add a simple backup script and/or status page  
+- Include architecture and screenshot assets in `assets/`
+
+
+
+
 
