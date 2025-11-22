@@ -1,0 +1,13 @@
+[global]
+   workgroup = WORKGROUP
+   server string = Raspberry Pi NAS
+   security = user
+   map to guest = bad user
+
+[nas]
+   path = /home/your-username/nas-share
+   browseable = yes
+   read only = no
+   valid users = your-username
+   create mask = 0660
+   directory mask = 0770
