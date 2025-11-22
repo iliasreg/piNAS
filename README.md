@@ -65,7 +65,7 @@ Planned (documented but optional for v1):
 
 - Install **Tailscale** on Android/iOS.  
 - Install a file manager with **SMB support**.  
-- Configure a new SMB share pointing to the Pi’s **Tailscale IP** (`100.x.y.z`), share `nas`, user `il`.
+- Configure a new SMB share pointing to the Pi’s **Tailscale IP** (`100.x.y.z`), share `nas`, user `your-username`.
 
 This allows secure file access from phones, again without exposing SMB to the public internet.
 
@@ -81,27 +81,6 @@ This allows secure file access from phones, again without exposing SMB to the pu
 - **Future improvement**: move data to a dedicated USB SSD/HDD for better endurance and throughput.
 
 ---
-
-## 🧭 Repository Layout (suggested)
-   ├─ README.md
-   ├─ docs/
-   │ ├─ architecture.md
-   │ ├─ setup-pi.md
-   │ ├─ setup-samba.md
-   │ ├─ setup-tailscale.md
-   │ ├─ client-linux.md
-   │ └─ future-work.md
-   ├─ scripts/
-   │ ├─ mount_nas_linux_example.sh
-   │ └─ backup_to_nas_example.sh
-   ├─ config/
-   │ ├─ smb.conf.example
-   │ └─ fstab-snippet.txt
-   └─ assets/
-   ├─ architecture-diagram.png
-   ├─ tailscale-admin-screenshot.png
-   └─ linux-mount-screenshot.png
-
 
 You can start with just `README.md` and gradually add the `docs/`, `scripts/`, and `assets/` as you refine the project.
 
