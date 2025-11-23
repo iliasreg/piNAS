@@ -3,6 +3,10 @@ _Samba + Tailscale · Low‑Power · Home Lab Friendly_
 
 This project turns a Raspberry Pi Zero 2 W into a minimalist NAS (Network Attached Storage) with **SMB file sharing** on the local network and **secure remote access** via **Tailscale**, without exposing SMB to the public internet.
 
+<div style="text-align: center;">
+  <img src="assets/components.jpg" alt="Components Used" style="display: block; margin: 0 auto;">
+</div>
+
 ---
 
 ## ✨ Features
