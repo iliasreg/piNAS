@@ -7,11 +7,10 @@ This project turns a Raspberry Pi Zero 2 W into a minimalist NAS (Network Attach
 
 ## ✨ Features
 
-- 🧊 **Ultra‑low‑power NAS** on a Raspberry Pi Zero 2 W  
-- 📁 **SMB (Samba) file sharing** for Linux (and later Windows/macOS/mobile)  
-- 🔐 **Secure remote access** over Tailscale (no SMB ports exposed to the internet)  
-- 🧑‍💻 **Headless setup**: SSH‑only, no monitor required after first boot  
-- 🧱 Designed as a **learning + portfolio** project (documented architecture, trade‑offs, and future improvements)
+- **Ultra‑low‑power NAS** on a Raspberry Pi Zero 2 W  
+- **SMB (Samba) file sharing** for Linux (and later Windows/macOS/mobile)  
+- **Secure remote access** over Tailscale (no SMB ports exposed to the internet)  
+-  **Headless setup**: SSH‑only, no monitor required after first boot  
 
 ---
 
@@ -21,11 +20,9 @@ This project turns a Raspberry Pi Zero 2 W into a minimalist NAS (Network Attach
 
 - **Raspberry Pi Zero 2 W** running Raspberry Pi OS Lite  
 - Storage initially on the **boot SD card** (128 GB) for simplicity  
-- **Samba** exports a share (e.g. `/home/il/nas-share`) over the LAN  
+- **Samba** exports a share (e.g. `/home/your-username/nas-share`) over the LAN  
 - **Tailscale** connects the Pi, a Linux laptop, and (later) mobile devices into a private mesh network  
 - Clients access the NAS via `smb://<tailscale-ip>/nas` or `//<tailscale-ip>/nas`
-
-A diagram (recommended for the repo) can live in `assets/architecture-diagram.png` and be embedded here.
 
 ---
 
@@ -79,10 +76,6 @@ This allows secure file access from phones, again without exposing SMB to the pu
   - Good for learning and light personal use.  
   - Not ideal for heavy write workloads due to SD card wear.  
 - **Future improvement**: move data to a dedicated USB SSD/HDD for better endurance and throughput.
-
----
-
-You can start with just `README.md` and gradually add the `docs/`, `scripts/`, and `assets/` as you refine the project.
 
 ---
 

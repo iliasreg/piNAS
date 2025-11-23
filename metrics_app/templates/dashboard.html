@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>piNAS Metrics Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #f9fafb;
+      --bg-card: #ffffff;
+      --border: #e5e7eb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 1.5rem;
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: -0.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .card {
+      background: var(--bg-card);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+    }
+    .card-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+    .card-main {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .card-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    .charts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+    @media (max-width: 800px) {
+      .charts {
+        grid-template-columns: 1fr;
+      }
+    }
+    .chart-card {
+      background: var(--bg-card);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+    }
+    canvas {
+      width: 100% !important;
+      height: 280px !important;
+    }
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    code {
+      background: var(--accent-soft);
+      padding: 0.15rem 0.3rem;
+      border-radius: 0.25rem;
+      font-size: 0.8rem;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container">
+  <h1>piNAS Metrics</h1>
+  {% if not has_data %}
+    <p class="subtitle">No metrics collected yet. Wait for the cron job to run or trigger the collector manually.</p>
+  {% else %}
+    <p class="subtitle">
+      Hostname: <strong>{{ stats.hostname }}</strong> ·
+      Last sample: <strong>{{ stats.last_timestamp }}</strong> ·
+      Samples: <strong>{{ stats.samples }}</strong>
+    </p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">CPU Load (1m)</div>
+        <div class="card-main">{{ stats.load_avg }}</div>
+        <div class="card-sub">min {{ stats.load_min }} · max {{ stats.load_max }}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Temperature (°C)</div>
+        <div class="card-main">{{ stats.temp_avg }}</div>
+        <div class="card-sub">min {{ stats.temp_min }} · max {{ stats.temp_max }}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Memory</div>
+        <div class="card-main">{{ stats.mem_used_last }} / {{ stats.mem_total_last }} MB</div>
+        <div class="card-sub">Last sample</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Disk</div>
+        <div class="card-main">{{ stats.disk_used_last }} / {{ stats.disk_total_last }}</div>
+        <div class="card-sub">Used: {{ stats.disk_used_pct_last }}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Samba Connections</div>
+        <div class="card-main">{{ stats.samba_connections_last }}</div>
+        <div class="card-sub">Active at last sample</div>
+      </div>
+    </div>
+
+    <div class="charts">
+      <div class="chart-card">
+        <h2>CPU Load (1m)</h2>
+        <canvas id="loadChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h2>Temperature (°C)</h2>
+        <canvas id="tempChart"></canvas>
+      </div>
+    </div>
+
+    <div class="footer">
+      Data from <code>/home/il/nas-metrics/metrics.csv</code> · Last updated at render time.
+    </div>
+
+    <script>
+      const labels = {{ chart_data.timestamps | tojson }};
+      const loadData = {{ chart_data.load_1m | tojson }};
+      const tempData = {{ chart_data.temp_c | tojson }};
+
+      const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            ticks: { color: '#6b7280' },
+            grid: { color: 'rgba(209,213,219,0.6)' }
+          },
+          y: {
+            ticks: { color: '#6b7280' },
+            grid: { color: 'rgba(209,213,219,0.6)' }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: '#111827' }
+          }
+        }
+      };
+
+      const ctxLoad = document.getElementById('loadChart').getContext('2d');
+      new Chart(ctxLoad, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Load (1m)',
+            data: loadData,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37,99,235,0.15)',
+            tension: 0.25,
+            fill: true,
+            pointRadius: 0
+          }]
+        },
+        options: commonOptions
+      });
+
+      const ctxTemp = document.getElementById('tempChart').getContext('2d');
+      new Chart(ctxTemp, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Temperature (°C)',
+            data: tempData,
+            borderColor: '#ea580c',
+            backgroundColor: 'rgba(234,88,12,0.18)',
+            tension: 0.25,
+            fill: true,
+            pointRadius: 0
+          }]
+        },
+        options: commonOptions
+      });
+    </script>
+  {% endif %}
+</div>
+</body>
+</html>

@@ -1,0 +1,4 @@
+timestamp,hostname,load_1m,mem_used_mb,mem_total_mb,disk_used,disk_total,disk_used_pct,temp_c,samba_connections
+2025-11-22T19:25:04.333916,raspberrypi,0.0,152,425,2.3G,115G,3%,52.1,0
+2025-11-22T19:30:02.160296,raspberrypi,0.0,149,425,2.3G,115G,3%,48.9,0
+2025-11-22T19:35:04.441657,raspberrypi,0.08,158,425,2.3G,115G,3%,50.5,0
